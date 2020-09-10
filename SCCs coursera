@@ -1,0 +1,142 @@
+#include<iostream>
+#include<string>
+#include<string.h>
+#include<cstring>
+#include<math.h>
+#include<iomanip>
+#include<vector>
+#include<cmath>
+#include<algorithm>
+#include<numeric>
+#include<cctype>
+#include<utility>
+#include<set>
+#include<map>
+#include<sstream>
+#include<iterator>
+#include<limits>
+#include<map>
+#include<deque>
+#include<stack>
+#include<queue>
+#include<fstream>
+using namespace std;
+#define pb push_back
+#define ff(i,a,b) for(int i=a;i<b;++i)
+#define ffl(i,a,b) for(long long i=a;i<b;++i)
+#define all(v) v.begin(), v.end() 
+#define X first
+#define Y second
+#define mp make_pair
+typedef long long ll;
+typedef std::vector<int> vec;
+typedef std::vector<long long> vecl;
+typedef map<int,int> mii;
+typedef map<ll,ll> mll;
+typedef std::pair<int,int> pii;
+typedef pair<ll,ll> pll; 
+const int md = 1000000007;
+#define pi 3.141592653589793238462643383279
+
+class Graph{
+public:
+    vec in;
+    vec out;
+};
+
+
+const int n=3200;
+int s{},t{},flag=1,cnt{};
+Graph g[n+1];
+int f[n+1]{};
+int z[n+1]{};
+
+void dfsr(int i){
+    z[i]=1;
+    //++cnt;
+    ///////////
+    for(auto x:g[i].in){      // on reversed graph
+        if(!z[x]){
+            dfsr(x);
+        }
+    }
+    
+    ++t;
+    f[t]=i; // storing finishing time in another way
+    
+}
+
+void dfs(int i){
+    z[i]=1;
+    ++cnt;
+    for(auto x:g[i].out){       // on original graph
+        if(!z[x]){
+            dfs(x);
+        }
+    }
+}
+
+
+int main() {
+	ios_base::sync_with_stdio(false); 
+    cin.tie(NULL);    
+    
+//     freopen("input.txt","r",stdin); 
+//     freopen("output.txt","w",stdout);
+    
+    int m{},k{},a{},b{},c{};
+    vec ans;
+    
+    std::ifstream in_file;
+    in_file.open("scc.txt");
+    if(!in_file){
+        cerr<<"Error opening file\n";
+        return 1;
+    }
+    
+    while(in_file>>a>>b){
+        g[a].out.pb(b);
+        g[b].in.pb(a);
+    }
+    
+    
+    // first pass
+    for(int i=n;i>0;--i){
+        if(!z[i]){
+            s=i;
+            dfsr(i);
+        }
+    }
+    flag=0;
+    ff(i,1,n+1)z[i]=0;
+    
+    // second pass
+    for(int i=n;i>0;--i){
+        //cout<<f[i]<<" ";//////////////
+        if(!z[f[i]]){
+            cnt=0;
+            dfs(f[i]);
+            ans.pb(cnt);
+            
+        }
+    }
+    //cout<<"\n";////////////////
+    
+    sort(ans.rbegin(),ans.rend());
+    m=ans.size();
+    //cout<<m<<" = ";
+    if(m>=5){
+        ff(i,0,5){
+            cout<<ans[i]<<" ";
+        }
+        cout<<"\n";
+    }else if(m>0){
+        for(auto x:ans)cout<<x<<" ";
+        ff(i,0,5-m)cout<<0<<" ";
+        cout<<"\n";
+    }else{
+        cout<<"zero\n";
+    }
+    
+	return 0;
+}
